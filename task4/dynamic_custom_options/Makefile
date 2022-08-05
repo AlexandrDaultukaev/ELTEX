@@ -53,7 +53,7 @@ $(BUILD_OBJ_DIR)/menu.o: menu/menu.c
 	$(CC) -fPIC $(I_FLAG) -c menu/menu.c -o $(MENU_OBJ) -g
 
 run:
-	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(PWD)/build/libs && ./$(BIN_DIR)/main
+	export LD_LIBRARY_PATH=LD_LIBRARY_PATH:$(PWD)/build/libs && ./$(BIN_DIR)/main
 
 build_clear:
 	rm ./build/bin/* && rm ./build/libs/* && rm ./build/obj/*
