@@ -27,9 +27,10 @@ void init(LineIndexer* idxer)
 int main() {
     initscr();
     keypad(stdscr, true);
+    scrollok(stdscr, TRUE);
     LineIndexer idxer;
     init(&idxer);
-    char str[100];
+    char str[256];
     int ex = 0;
     
 
@@ -38,18 +39,18 @@ int main() {
 
         switch (ch) {
             case ERR:
-                printw("Please, press any key...\n");  //Если нажатия не было, напоминаем пользователю, что надо нажать клавишу
+                mvaddstr(getmaxy(stdscr)/2, getmaxx(stdscr)/2, "Error has occured. Exit");
                 break;
 
-            case KEY_F(2):
-                WINDOW *wnd;
+            case KEY_F(2): ;
+                WINDOW *wnd = newwin(2, 44, getmaxy(stdscr)-1, 0);
                 // WINDOW *subwnd;
-                wnd = newwin(2, 44, getmaxy(stdscr)-1, 0);
                 char filename[20];
                 //move(getmaxy(stdscr), 0);
                 waddstr(wnd, "Enter filename: ");
                 wrefresh(wnd);
                 wgetstr(wnd, filename);
+
                 int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IWUSR | S_IRUSR | S_IWGRP | S_IRGRP | S_IROTH);
                 write(fd, str, strlen(str));
                 close(fd);
@@ -75,13 +76,19 @@ int main() {
             case 10:
             case 13:
                 idxer.line_ends[idxer.cur_line_idx++] = idxer.x;
-                idxer.y++;
                 idxer.x = 0;
                 str[idxer.pos++] = '\n';
+                if(idxer.y+1 != getmaxy(stdscr))
+                {
+                    idxer.y++;
+                }
                 break;
             default:
                 str[idxer.pos++] = ch;
-                idxer.x++;
+                if(idxer.x+1 != getmaxx(stdscr))
+                {
+                    idxer.x++;
+                }
                 break;
         }
 
