@@ -110,7 +110,7 @@ int main() {
     scrollok(stdscr, TRUE);
     LineIndexer idxer;
     init(&idxer);
-    char str[256];
+    char str[1024];
     int ex = 0;
     int fd = 0;
 
@@ -133,11 +133,15 @@ int main() {
             case KEY_F(2):
                 save(&idxer, str, strlen(str));
                 break;
+            case KEY_UP:
 
             case KEY_BACKSPACE:
-                delch();
-                str[--idxer.pos] = '\0';
-                idxer.x--;
+                if(idxer.x-1 > -1 || idxer.y > 0)
+                {
+                    delch();
+                    str[--idxer.pos] = '\0';
+                    idxer.x--;
+                }
                 if (idxer.x < 0) {
                     idxer.y--;
                     idxer.x = idxer.line_ends[--idxer.cur_line_idx];
