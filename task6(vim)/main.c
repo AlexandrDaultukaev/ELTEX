@@ -23,7 +23,7 @@ enum CODE {
     SAVE_CODE = 2,
 };
 
-struct LineIndexer {
+struct Controller {
     char str[1024];
     int line_ends[256];
     char associated_file[32];
@@ -33,9 +33,9 @@ struct LineIndexer {
     int cur_line_idx;
     int modified;  // Флаг, контролирующий изменение в str.
     int fd;
-} typedef LineIndexer;
+} typedef Controller;
 
-void init(LineIndexer* idxer) {
+void init(Controller* idxer) {
     idxer->cur_line_idx = 0;
     idxer->x = 0;
     idxer->y = 0;
@@ -48,7 +48,7 @@ void init(LineIndexer* idxer) {
     idxer->fd = 0;
 }
 
-void save(LineIndexer* idxer) {
+void save(Controller* idxer) {
     WINDOW* wnd = newwin(2, 44, getmaxy(stdscr) - 1, 0);
     if (idxer->modified)  // Если изменения в str произошли, значит записываем в файл
     {
@@ -84,7 +84,7 @@ void save(LineIndexer* idxer) {
     refresh();
 }
 
-int confirm_exit(LineIndexer* idxer) {
+int confirm_exit(Controller* idxer) {
     if (idxer->modified) {
         char y_n[5];
         WINDOW* wnd = newwin(2, 44, getmaxy(stdscr) - 2, 0);
@@ -109,7 +109,7 @@ int confirm_exit(LineIndexer* idxer) {
     }
 }
 
-int open_file(LineIndexer* idxer) {
+int open_file(Controller* idxer) {
     WINDOW* wnd = newwin(2, 44, getmaxy(stdscr) - 1, 0);
     waddstr(wnd, "Enter filename to open: ");
     wrefresh(wnd);
@@ -146,7 +146,7 @@ int open_file(LineIndexer* idxer) {
 int main() {
     initscr();
     keypad(stdscr, true);
-    LineIndexer idxer;
+    Controller idxer;
     init(&idxer);
 
     int ex = 0;
