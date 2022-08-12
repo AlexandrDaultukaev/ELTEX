@@ -24,12 +24,13 @@ enum CODE {
 };
 
 struct LineIndexer {
+    char str[1024];
+    int line_ends[256];
+    char associated_file[32];
     int y;
     int x;
     int pos;
     int cur_line_idx;
-    int line_ends[256];
-    char associated_file[32];
     int modified;  // Флаг, контролирующий изменение в str.
     int fd;
 } typedef LineIndexer;
@@ -47,21 +48,21 @@ void init(LineIndexer* idxer) {
     idxer->fd = 0;
 }
 
-void save(LineIndexer* idxer, char* str, size_t len) {
+void save(LineIndexer* idxer) {
     WINDOW* wnd = newwin(2, 44, getmaxy(stdscr) - 1, 0);
     if (idxer->modified)  // Если изменения в str произошли, значит записываем в файл
     {
         if (idxer->associated_file[0] == ' ') {
             waddstr(wnd, "Enter filename: ");
             wrefresh(wnd);
-            wgetstr(wnd, idxer->associated_file);
+            wgetnstr(wnd, idxer->associated_file, 31);
+            idxer->associated_file[31] = '\0';
         }
         idxer->fd = open(idxer->associated_file, O_WRONLY | O_CREAT | O_TRUNC, S_IWUSR | S_IRUSR | S_IWGRP | S_IRGRP | S_IROTH);
         if (idxer->fd == -1) {
             perror("Open error");
         }
-        int res = write(idxer->fd, str, len);
-
+        int res = write(idxer->fd, idxer->str, strlen(idxer->str));
         if (res != -1) {
             waddstr(wnd, "Saving completed!\n");
         } else {
@@ -73,6 +74,9 @@ void save(LineIndexer* idxer, char* str, size_t len) {
 
         idxer->modified = 0;
     }
+
+    refresh();
+    msleep(3000);
 
     wclear(wnd);
     wrefresh(wnd);
@@ -94,6 +98,7 @@ int confirm_exit(LineIndexer* idxer) {
             return NOEXIT_CODE;
         }
         if (y_n[0] == 'y') {
+            close(idxer->fd);
             return EXIT_CODE;
         }
         if (y_n[0] == 's') {
@@ -104,15 +109,47 @@ int confirm_exit(LineIndexer* idxer) {
     }
 }
 
+int open_file(LineIndexer* idxer) {
+    WINDOW* wnd = newwin(2, 44, getmaxy(stdscr) - 1, 0);
+    waddstr(wnd, "Enter filename to open: ");
+    wrefresh(wnd);
+    wgetnstr(wnd, idxer->associated_file, 31);
+    idxer->associated_file[31] = '\0';
+
+    wclear(wnd);
+    wrefresh(wnd);
+    delwin(wnd);
+    if (idxer->fd != 0) {
+        close(idxer->fd);
+    }
+
+    idxer->fd = open(idxer->associated_file, O_RDWR);
+
+    int res = read(idxer->fd, idxer->str, 1022);
+    for (int i = 0; i < res; i++) {
+        if (idxer->str[i] == '\n') {
+            idxer->line_ends[idxer->cur_line_idx++] = idxer->x;
+            idxer->y++;
+            idxer->x = 0;
+        } else {
+            idxer->x++;
+        }
+        idxer->pos++;
+    }
+    addstr(idxer->str);
+    move(idxer->y, idxer->x);
+
+    refresh();
+    msleep(3000);
+}
+
 int main() {
     initscr();
     keypad(stdscr, true);
-    scrollok(stdscr, TRUE);
     LineIndexer idxer;
     init(&idxer);
-    char str[1024];
+
     int ex = 0;
-    int fd = 0;
 
     while (!ex) {
         int ch = mvgetch(idxer.y, idxer.x);
@@ -131,15 +168,19 @@ int main() {
                 }
 
             case KEY_F(2):
-                save(&idxer, str, strlen(str));
+                save(&idxer);
                 break;
-            case KEY_UP:
-
+            case KEY_F(1):
+                for (int i = 0; i < idxer.pos; i++) {
+                    idxer.str[i] = ' ';
+                }
+                init(&idxer);
+                open_file(&idxer);
+                break;
             case KEY_BACKSPACE:
-                if(idxer.x-1 > -1 || idxer.y > 0)
-                {
+                if (idxer.x - 1 > -1 || idxer.y > 0) {
                     delch();
-                    str[--idxer.pos] = '\0';
+                    idxer.str[--idxer.pos] = '\0';
                     idxer.x--;
                 }
                 if (idxer.x < 0) {
@@ -153,17 +194,22 @@ int main() {
             case 13:
                 idxer.line_ends[idxer.cur_line_idx++] = idxer.x;
                 idxer.x = 0;
-                str[idxer.pos++] = '\n';
+                idxer.str[idxer.pos++] = '\n';
+                idxer.str[idxer.pos] = '\0';
                 if (idxer.y + 1 != getmaxy(stdscr)) {
                     idxer.y++;
                 }
                 if (!idxer.modified) idxer.modified = 1;
                 break;
             default:
-                str[idxer.pos++] = ch;
+                idxer.str[idxer.pos++] = ch;
+                if (idxer.pos > 1023) {
+                    idxer.pos--;
+                }
                 if (idxer.x + 1 != getmaxx(stdscr)) {
                     idxer.x++;
                 }
+                idxer.str[idxer.pos] = '\0';
                 if (!idxer.modified) idxer.modified = 1;
                 break;
         }
