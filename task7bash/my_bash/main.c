@@ -17,6 +17,11 @@ int main(int argc, char* argv[]) {
         int spaces_num = 0;
         printf(">>> ");
         fgets(entire_command, 128, stdin);
+        if (strcmp(entire_command, "exit\n") == 0) {
+            printf("exit");
+            exit(EXIT_SUCCESS);
+        }
+
         for (int i = 0; entire_command[i] != '\0'; i++) {
             if (entire_command[i] == ' ') {
                 spaces_num++;
@@ -27,7 +32,7 @@ int main(int argc, char* argv[]) {
             strcpy(command, token);
         }
         do {
-            my_args[num_args] = (char*)malloc(sizeof(char) * 20);
+            my_args[num_args] = malloc(sizeof(char) * 20);
             strcpy(my_args[num_args++], token);
             token = strtok(NULL, separator);
         } while (token != NULL && spaces_num > 0);
@@ -49,6 +54,7 @@ int main(int argc, char* argv[]) {
         }
         for (int i = 0; i < num_args; i++) {
             free(my_args[i]);
+            my_args[i] = NULL;
         }
     }
     return 0;
