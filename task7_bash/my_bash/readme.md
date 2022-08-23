@@ -7,6 +7,14 @@ make
 
 ## Работа программы
 ```
+>>> ls | grep a
+main
+main.c
+main.o
+Makefile
+readme.md
+>>> ls | grep ake
+Makefile
 >>> ls
 main  main.c  main.o  Makefile	script.py
 >>> ls -la
