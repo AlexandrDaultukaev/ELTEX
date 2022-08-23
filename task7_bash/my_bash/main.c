@@ -19,34 +19,33 @@ void run_process(char** cmd1) {
             fprintf(stderr, "Execvp failed: %s\n", strerror(errno));
         exit(EXIT_SUCCESS);
     } else {
-        // close(fd[1]);
-        // dup2(fd[0], 0);
         wait(&status);
     }
 }
 
-void run_pipe(char** cmd1, char** cmd2) {
-    printf("PIPE: %s, %s\n", cmd1[0], cmd2[0]);
+void run_pipe(char* cmds[20][20], int num_pipes) {
     int fd[2];
     if (pipe(fd) == -1) {
         fprintf(stderr, "pipe error\n");
     }
-    int status;
-    pid_t pid1 = fork();
-    if (!pid1) {
-        dup2(fd[1], 1);
-        close(fd[0]);
-        close(fd[1]);
-        execvp(cmd1[0], cmd1);
+    int row = 0;
+    pid_t pid1;
+    pid_t pid2;
+    for (int i = 0; i <= num_pipes; i++) {
+        pid1 = fork();
+        if (!pid1) {
+            dup2(fd[0], 0);
+            if (i != num_pipes) {
+                dup2(fd[1], 1);
+            }
+            close(fd[0]);
+            close(fd[1]);
+
+            execvp(cmds[row][0], cmds[row]);
+        }
+        row++;
     }
 
-    pid_t pid2 = fork();
-    if (!pid2) {
-                dup2(fd[0], 0);
-        close(fd[0]);
-        close(fd[1]);
-        execvp(cmd2[0], cmd2);
-    }
     close(fd[0]);
     close(fd[1]);
     waitpid(pid1, NULL, 0);
@@ -55,10 +54,11 @@ void run_pipe(char** cmd1, char** cmd2) {
 
 int main(int argc, char* argv[]) {
     char* my_args[20] = {[0 ... 19] = NULL};
-    char* cmd1[20] = {[0 ... 19] = NULL};
-    char* cmd2[20] = {[0 ... 19] = NULL};
+    char* cmds[20][20] = {[0 ... 19] = NULL};
     char command[20];
-    int pipe_pos = -1;
+    int flag = 1;
+    int pipe_pos[10] = {[0 ... 9] = -1};
+    int pipe_idx = 0;
     char entire_command[128];
     char separator[] = " ";
     while (strcmp(command, "exit") != 0) {
@@ -84,38 +84,52 @@ int main(int argc, char* argv[]) {
         do {
             my_args[num_args] = malloc(sizeof(char) * 20);
             if (strcmp(token, "|") == 0) {
-                pipe_pos = num_args;
+                pipe_pos[pipe_idx++] = num_args;
+                flag = 0;
             }
             strcpy(my_args[num_args++], token);
             token = strtok(NULL, separator);
         } while (token != NULL && spaces_num > 0);
-
+        my_args[num_args] = NULL;
         /* Удаляем \n из строк, т.к. fgets добавляет его */
         my_args[num_args - 1][strcspn(my_args[num_args - 1], "\n")] = 0;
         command[strcspn(command, "\n")] = 0;
+        int p_idx = pipe_idx;
+        int cmd_begin = 0;
+        int row = 0;
 
-        for (int i = 0; i < pipe_pos; i++) {
-            cmd1[i] = my_args[i];
-        }
-
-        if (pipe_pos != 19) {
-            int j = 0;
-            for (int i = pipe_pos + 1; i < 20; i++) {
-                cmd2[j++] = my_args[i];
+        int command_num = 0;
+        int arg_num = 0;
+        for (int i = 0; i <= pipe_idx; i++) {
+            if (pipe_pos[i] == -1 && !flag) {
+                pipe_pos[i] = num_args;
+                flag = 1;
             }
+            for (int j = cmd_begin; j < pipe_pos[i]; j++) {
+                cmds[row][command_num++] = my_args[arg_num++];
+            }
+            cmd_begin = pipe_pos[i] + 1;
+            arg_num++;
+            row++;
+            command_num = 0;
         }
-        if (pipe_pos != -1) {
-            run_pipe(cmd1, cmd2);
+        if (pipe_pos[0] != -1) {
+            run_pipe(cmds, pipe_idx);
         } else {
             run_process(my_args);
         }
-        pipe_pos = -1;
+
         for (int i = 0; i < num_args; i++) {
             free(my_args[i]);
             my_args[i] = NULL;
-            cmd1[i] = NULL;
-            cmd2[i] = NULL;
         }
+        for (int i = 0; i < 20; i++) {
+            pipe_pos[i] = -1;
+            for (int j = 0; j < 20; j++) {
+                cmds[i][j] = NULL;
+            }
+        }
+        pipe_idx = 0;
     }
     return 0;
 }
