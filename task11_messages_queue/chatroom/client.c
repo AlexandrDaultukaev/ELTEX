@@ -19,7 +19,7 @@
 char client_queue_name[128];
 
 void handle_shutdown(int sig) {
-    printf("\nDisconnect\n");
+    printf("\nDisconnect %d\n", getpid());
     mq_unlink(client_queue_name);
     exit(0);
 }
@@ -33,9 +33,6 @@ void init_attr(struct mq_attr* attr) {
 
 int main() {
     signal(SIGINT, handle_shutdown);
-    struct timespec timeout;
-    timeout.tv_sec = 0;
-    timeout.tv_nsec = 500;
     char in_buffer[MSG_BUFFER_SIZE];
     char out_buffer[MSG_BUFFER_SIZE];
 
