@@ -11,16 +11,17 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define SERVER_QUEUE_NAME "/eltex-homework-hello-hi"
-#define QUEUE_PERIMISSIONS 0660  // r+w for owner & group
-#define MAX_MESSAGES 10
 #define MAX_MSG_SIZE 128
-#define MSG_BUFFER_SIZE 128  // a little larger than MAX_MSG_SIZE
+
+/* *
+ * Переносим то, что нужно будет закрыть, в глобальную область,
+ * чтобы закрывать можно было handle_shutdown
+ * */
 
 char sem_name[128] = "mysem1";
 char shm_name_flag[128] = "/mysharedflag1";
 char shm_name_msg[128] = "/mysharedmsg1";
-char shm_name_sendflag[128] = "/mysharedsendflag1";
+char shm_name_send_pid[128] = "/mysharedsendflag1";
 sem_t* sem;
 void* addr[3] = {[0 ... 2] = NULL};
 size_t size = MAX_MSG_SIZE;
@@ -34,7 +35,8 @@ void handle_shutdown(int sig) {
     sem_unlink(sem_name);
     shm_unlink(shm_name_flag);
     shm_unlink(shm_name_msg);
-    exit(0);
+    shm_unlink(shm_name_send_pid);
+    exit(EXIT_SUCCESS);
 }
 
 int main() {
@@ -47,9 +49,9 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    int shm_id_sendflag = shm_open(shm_name_sendflag, O_RDWR | O_CREAT, 0666);
-    if (shm_id_sendflag == -1) {
-        perror("shm_open_sendflag");
+    int shm_id_send_pid = shm_open(shm_name_send_pid, O_RDWR | O_CREAT, 0666);
+    if (shm_id_send_pid == -1) {
+        perror("shm_open_send_pid");
         exit(EXIT_FAILURE);
     }
 
@@ -64,9 +66,9 @@ int main() {
         perror("ftruncate_flag");
         exit(EXIT_FAILURE);
     }
-    ftrunc_ret = ftruncate(shm_id_sendflag, size);
+    ftrunc_ret = ftruncate(shm_id_send_pid, size);
     if (ftrunc_ret == -1) {
-        perror("ftruncate_sendflag");
+        perror("ftruncate_send_pid");
         exit(EXIT_FAILURE);
     }
     ftrunc_ret = ftruncate(shm_id_msg, size);
@@ -75,28 +77,35 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
+    // Флаг сигнализирует о том, что в msg пришли новые данные, т.е. новое сообщение
     addr[0] = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_id_flag, 0);
     if (addr == MAP_FAILED) {
         perror("mmap_flag");
         exit(EXIT_FAILURE);
     }
 
+    // Тут храним сообщение, которое перезаписывает предыдущее
     addr[1] = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_id_msg, 0);
     if (addr == MAP_FAILED) {
         perror("mmap_msg");
         exit(EXIT_FAILURE);
     }
-    addr[3] = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_id_sendflag, 0);
+
+    // send_pid хранит pid отправителя
+    addr[2] = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_id_send_pid, 0);
     if (addr == MAP_FAILED) {
         perror("mmap_sendflag");
         exit(EXIT_FAILURE);
     }
 
     int* flag = (int*)addr[0];
-    int* sendflag = (int*)addr[3];
-    *sendflag = 0;
+    int* send_pid = (int*)addr[2];
+    *send_pid = 0;
     *flag = 0;
     char* msg = (char*)addr[1];
+
+    // msg_tmp используется в fgets, чтобы вынести из критической секции(к.с.)
+    // в к.с. уже копируем из msg_tmp в msg
     char msg_tmp[MAX_MSG_SIZE];
 
     sem = sem_open(sem_name, O_CREAT | O_RDWR, 0666, 1);
@@ -110,16 +119,38 @@ int main() {
         exit(EXIT_FAILURE);
     }
     while (1) {
+        /* *
+         * Возможная проблема: процессы будут читать новое сообщение №1, но
+         * один из клиентов написал еще одно сообщение №2 и процесс, принявший
+         * это сообщение, захватил семафор и перезаписал сообщение №1, и не все
+         * процессы успели прочитать его.                                        ]
+         * */
         if (pid == 0) {
             fgets(msg_tmp, MAX_MSG_SIZE, stdin);
             sem_wait(sem);
             strcpy(msg, msg_tmp);
             *flag = 1;
-            *sendflag = main_pid;
+            *send_pid = main_pid;
             sem_post(sem);
         } else {
             if (*flag == 1) {
-                if (*sendflag != main_pid) {
+                /* *
+                 * Костыльное решение, но, пока что, лучше не придумал.
+                 * Возможна такая ситуация, что первый процесс, который
+                 * прошел в к.с., изменит flag на 0, а процессы, которые
+                 * ещё не зашли внуть области "if (*flag == 1)", так и не
+                 * получат сообщение, так как флаг уже изменен и не сообщает
+                 * о новом сообщении.
+                 * Поэтому здесь организуем usleep, чтобы затормозить процессы
+                 * и дать всем зайти в область "if (*flag == 1)" и далее не зависеть
+                 * от флага.
+                 * */
+                usleep(100 * 1000);  // 0.1 sec
+                if (*send_pid != main_pid) {
+                    /* *
+                     * Не позволяем процессу отправителю пройти сюда и
+                     * отправить себе СВОЁ ЖЕ сообщение
+                     * */
                     sem_wait(sem);
                     *flag = 0;
                     printf("%s\n", msg);
