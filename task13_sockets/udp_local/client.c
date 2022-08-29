@@ -64,7 +64,7 @@ void run_client() {
         error("sendto");
     }
 
-    n = recvfrom(sock, recv_buff, BUFF_SIZE, MSG_WAITALL, (struct sockaddr*)&server, &len);
+    n = recvfrom(sock, recv_buff, BUFF_SIZE, 0, (struct sockaddr*)&server, &len);
     if (n < 0) {
         error("recvfrom");
     }

@@ -71,7 +71,7 @@ void server() {
             unlink(filename);
             exit(EXIT_SUCCESS);
         } else {
-            n = recvfrom(sock, recv_buff, BUFF_SIZE, MSG_WAITALL, (struct sockaddr*)&client, &len);
+            n = recvfrom(sock, recv_buff, BUFF_SIZE, 0, (struct sockaddr*)&client, &len);
             if (n < 0) {
                 error("recvfrom");
             }
