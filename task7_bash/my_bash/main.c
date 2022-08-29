@@ -24,14 +24,13 @@ void run_process(char** cmd1) {
     }
 }
 
-
 /* cmds представляет собой массив команд, разделенные каналами:
  * Пример: $ ls | grep ake | grep 135
- * 
+ *
  * cmds = {    0        1
  *      0|    "ls",
  *      1|    "grep", "ake",
- *      2|    "grep", "135",   
+ *      2|    "grep", "135",
  *        }
 
 /* Функция с использованием pipe */
@@ -62,16 +61,16 @@ void run_pipe(char* cmds[20][20], int num_pipes) {
     }
     close(fd[0]);
     close(fd[1]);
-    free(pid);
+
     do {
         for (int i = 0; i < num_pipes; i++) {
             waitpid(pid[i], &status, WUNTRACED);
         }
     } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+    free(pid);
 }
 
 int main(int argc, char* argv[]) {
-
     /* my_args - одномерный массив команд = {"ls", "grep", "..."} */
     char* my_args[20] = {[0 ... 19] = NULL};
     char* cmds[20][20] = {[0 ... 19] = NULL};
@@ -90,7 +89,6 @@ int main(int argc, char* argv[]) {
 
     /* entire_command - вся команда посимвольно: {'l', 's', ' ', '|', ...} */
     char entire_command[128];
-
 
     char separator[] = " ";
     while (strcmp(command, "exit") != 0) {
@@ -139,7 +137,6 @@ int main(int argc, char* argv[]) {
                 flag = 1;
             }
             for (int j = cmd_begin; j < pipe_pos[i]; j++) {
-                
                 /* Не делаем лишнюю копию, а просто храним указатель на команду my_args */
                 cmds[row][command_num++] = my_args[arg_num++];
             }
