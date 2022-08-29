@@ -6,6 +6,8 @@ make
 ```
 
 ## Работа программы
+
+### Используя один пайп
 ```
 >>> ls | grep a
 main
@@ -15,6 +17,17 @@ Makefile
 readme.md
 >>> ls | grep ake
 Makefile
+```
+
+### Используя два пайпа
+```
+>>> ls -la | grep ake | grep 135
+>>> -rw-rw-r-- 1 alex alex   135 авг 18 20:29 Makefile
+ls -la | grep ake | grep rhrhr        <--- шаблон имени, которого нет в директории
+>>> 
+```
+
+```
 >>> ls
 main  main.c  main.o  Makefile	script.py
 >>> ls -la
