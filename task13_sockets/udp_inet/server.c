@@ -38,7 +38,7 @@ int readable_timeo(int fd, int sec) {
     return (select(fd + 1, &rset, NULL, NULL, &timeout));
 }
 
-void make_named_socket() {
+void make_socket() {
     struct sockaddr_in name;
     size_t size;
 
@@ -66,7 +66,7 @@ void server() {
     struct sockaddr_in client;
     int n, len = sizeof(client);
 
-    make_named_socket();
+    make_socket();
     while (1) {
         if (readable_timeo(sock, 40) == 0) {
             printf("Socket timeout\n");
