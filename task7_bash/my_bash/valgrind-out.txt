@@ -1,0 +1,182 @@
+==8192== Memcheck, a memory error detector
+==8192== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==8192== Using Valgrind-3.19.0-8d3c8034b8-20220411 and LibVEX; rerun with -h for copyright info
+==8192== Command: ./main
+==8192== Parent PID: 1733
+==8192== 
+--8192-- 
+--8192-- Valgrind options:
+--8192--    --leak-check=full
+--8192--    --show-leak-kinds=all
+--8192--    --track-origins=yes
+--8192--    --verbose
+--8192--    --log-file=valgrind-out.txt
+--8192-- Contents of /proc/version:
+--8192--   Linux version 5.15.0-46-generic (buildd@lcy02-amd64-007) (gcc (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0, GNU ld (GNU Binutils for Ubuntu) 2.34) #49~20.04.1-Ubuntu SMP Thu Aug 4 19:15:44 UTC 2022
+--8192-- 
+--8192-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-rdtscp-sse3-ssse3
+--8192-- Page sizes: currently 4096, max supported 4096
+--8192-- Valgrind library directory: /snap/valgrind/136/usr/libexec/valgrind
+--8192-- Reading syms from /home/alex/WORK/Eltex/ELTEX/task7_bash/my_bash/main
+--8192-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-2.31.so
+--8192--   Considering /usr/lib/debug/.build-id/45/87364908de169dec62ffa538170118c1c3a078.debug ..
+--8192--   .. build-id is valid
+--8192-- Reading syms from /snap/valgrind/136/usr/libexec/valgrind/memcheck-amd64-linux
+--8192--    object doesn't have a dynamic symbol table
+--8192-- Warning: inlined fn name without absori
+--8192-- is shown as UnknownInlinedFun
+--8192-- Scheduler: using generic scheduler lock implementation.
+--8192-- Reading suppressions file: /snap/valgrind/136/usr/libexec/valgrind/default.supp
+==8192== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-8192-by-alex-on-???
+==8192== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-8192-by-alex-on-???
+==8192== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-8192-by-alex-on-???
+==8192== 
+==8192== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==8192== don't want to do, unless you know exactly what you're doing,
+==8192== or are doing some strange experiment):
+==8192==   /snap/valgrind/136/usr/libexec/valgrind/../../bin/vgdb --pid=8192 ...command...
+==8192== 
+==8192== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==8192==   /path/to/gdb ./main
+==8192== and then give GDB the following command
+==8192==   target remote | /snap/valgrind/136/usr/libexec/valgrind/../../bin/vgdb --pid=8192
+==8192== --pid is optional if only one valgrind process is running
+==8192== 
+--8192-- REDIR: 0x4022e20 (ld-linux-x86-64.so.2:strlen) redirected to 0x581e94bb (vgPlain_amd64_linux_REDIR_FOR_strlen)
+--8192-- REDIR: 0x4022bf0 (ld-linux-x86-64.so.2:index) redirected to 0x581e94d5 (vgPlain_amd64_linux_REDIR_FOR_index)
+--8192-- Reading syms from /snap/valgrind/136/usr/libexec/valgrind/vgpreload_core-amd64-linux.so
+--8192-- Reading syms from /snap/valgrind/136/usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so
+==8192== WARNING: new redirection conflicts with existing -- ignoring it
+--8192--     old: 0x04022e20 (strlen              ) R-> (0000.0) 0x581e94bb vgPlain_amd64_linux_REDIR_FOR_strlen
+--8192--     new: 0x04022e20 (strlen              ) R-> (2007.0) 0x04a3ef30 strlen
+--8192-- REDIR: 0x401f600 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4a40060 (strcmp)
+--8192-- REDIR: 0x4023380 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4a44280 (mempcpy)
+--8192-- Reading syms from /usr/lib/x86_64-linux-gnu/libc-2.31.so
+--8192--   Considering /usr/lib/debug/.build-id/18/78e6b475720c7c51969e69ab2d276fae6d1dee.debug ..
+--8192--   .. build-id is valid
+==8192== WARNING: new redirection conflicts with existing -- ignoring it
+--8192--     old: 0x04cf9250 (memalign            ) R-> (1011.0) 0x04a3e175 memalign
+--8192--     new: 0x04cf9250 (memalign            ) R-> (1017.0) 0x04a3e14b aligned_alloc
+==8192== WARNING: new redirection conflicts with existing -- ignoring it
+--8192--     old: 0x04cf9250 (memalign            ) R-> (1011.0) 0x04a3e175 memalign
+--8192--     new: 0x04cf9250 (memalign            ) R-> (1017.0) 0x04a3e121 aligned_alloc
+==8192== WARNING: new redirection conflicts with existing -- ignoring it
+--8192--     old: 0x04cf9250 (memalign            ) R-> (1011.0) 0x04a3e175 memalign
+--8192--     new: 0x04cf9250 (memalign            ) R-> (1017.0) 0x04a3e14b aligned_alloc
+==8192== WARNING: new redirection conflicts with existing -- ignoring it
+--8192--     old: 0x04cf9250 (memalign            ) R-> (1011.0) 0x04a3e175 memalign
+--8192--     new: 0x04cf9250 (memalign            ) R-> (1017.0) 0x04a3e121 aligned_alloc
+--8192-- REDIR: 0x4cfe480 (libc.so.6:memmove) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfd780 (libc.so.6:strncpy) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfe7b0 (libc.so.6:strcasecmp) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfd0a0 (libc.so.6:strcat) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfd7e0 (libc.so.6:rindex) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cffc50 (libc.so.6:rawmemchr) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4d1ace0 (libc.so.6:wmemchr) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4d1a820 (libc.so.6:wcscmp) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfe5e0 (libc.so.6:mempcpy) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfe410 (libc.so.6:bcmp) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfd710 (libc.so.6:strncmp) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfd150 (libc.so.6:strcmp) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfe540 (libc.so.6:memset) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4d1a7e0 (libc.so.6:wcschr) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfd670 (libc.so.6:strnlen) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfd230 (libc.so.6:strcspn) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfe800 (libc.so.6:strncasecmp) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfd1d0 (libc.so.6:strcpy) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfe950 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4d1bf50 (libc.so.6:wcsnlen) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4d1a860 (libc.so.6:wcscpy) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfd820 (libc.so.6:strpbrk) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfd100 (libc.so.6:index) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfd630 (libc.so.6:strlen) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4d06bb0 (libc.so.6:memrchr) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfe850 (libc.so.6:strcasecmp_l) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfe3d0 (libc.so.6:memchr) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4d1a930 (libc.so.6:wcslen) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfdae0 (libc.so.6:strspn) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfe750 (libc.so.6:stpncpy) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfe6f0 (libc.so.6:stpcpy) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cffc90 (libc.so.6:strchrnul) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4cfe8a0 (libc.so.6:strncasecmp_l) redirected to 0x48306e8 (_vgnU_ifunc_wrapper)
+--8192-- REDIR: 0x4d0f8c0 (libc.so.6:__strrchr_sse2) redirected to 0x4a3e910 (__strrchr_sse2)
+--8192-- REDIR: 0x4d083b0 (libc.so.6:__strcmp_sse2_unaligned) redirected to 0x4a3ff20 (strcmp)
+==8192== Conditional jump or move depends on uninitialised value(s)
+==8192==    at 0x4A3FF2C: strcmp (vg_replace_strmem.c:924)
+==8192==    by 0x109C9B: main (main.c:95)
+==8192==  Uninitialised value was created by a stack allocation
+==8192==    at 0x1096A8: main (main.c:74)
+==8192== 
+==8192== Conditional jump or move depends on uninitialised value(s)
+==8192==    at 0x109C9E: main (main.c:95)
+==8192==  Uninitialised value was created by a stack allocation
+==8192==    at 0x1096A8: main (main.c:74)
+==8192== 
+--8192-- REDIR: 0x4d0f6b0 (libc.so.6:__strchrnul_sse2) redirected to 0x4a43db0 (strchrnul)
+--8192-- REDIR: 0x4cf80e0 (libc.so.6:malloc) redirected to 0x4a38fd3 (malloc)
+--8192-- REDIR: 0x4d09ec0 (libc.so.6:__memchr_sse2) redirected to 0x4a40100 (memchr)
+--8192-- REDIR: 0x4d19ad0 (libc.so.6:memcpy@GLIBC_2.2.5) redirected to 0x4a401e0 (memcpy@GLIBC_2.2.5)
+--8192-- REDIR: 0x4d19ab0 (libc.so.6:__mempcpy_sse2_unaligned) redirected to 0x4a43ec0 (mempcpy)
+--8192-- REDIR: 0x4d0fbc0 (libc.so.6:__strlen_sse2) redirected to 0x4a3eeb0 (__strlen_sse2)
+--8192-- REDIR: 0x4cf86d0 (libc.so.6:free) redirected to 0x4a3b8c1 (free)
+==8192== 
+==8192== Process terminating with default action of signal 2 (SIGINT)
+==8192==    at 0x4D6BFD2: read (read.c:26)
+==8192==    by 0x4CEEB9E: _IO_file_underflow@@GLIBC_2.2.5 (fileops.c:517)
+==8192==    by 0x4CEFF85: _IO_default_uflow (genops.c:362)
+==8192==    by 0x4CE186B: _IO_getline_info (iogetline.c:60)
+==8192==    by 0x4CE06C9: fgets (iofgets.c:53)
+==8192==    by 0x109791: main (main.c:100)
+==8192== 
+==8192== HEAP SUMMARY:
+==8192==     in use at exit: 2,048 bytes in 2 blocks
+==8192==   total heap usage: 17 allocs, 15 frees, 3,608 bytes allocated
+==8192== 
+==8192== Searching for pointers to 2 not-freed blocks
+==8192== Checked 70,912 bytes
+==8192== 
+==8192== 1,024 bytes in 1 blocks are still reachable in loss record 1 of 2
+==8192==    at 0x4A39045: malloc (vg_replace_malloc.c:381)
+==8192==    by 0x4CDFD03: _IO_file_doallocate (filedoalloc.c:101)
+==8192==    by 0x4CEFECF: _IO_doallocbuf (genops.c:347)
+==8192==    by 0x4CEEF2F: _IO_file_overflow@@GLIBC_2.2.5 (fileops.c:745)
+==8192==    by 0x4CED6B4: _IO_new_file_xsputn (fileops.c:1244)
+==8192==    by 0x4CED6B4: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1197)
+==8192==    by 0x4CD4971: __vfprintf_internal (vfprintf-internal.c:1373)
+==8192==    by 0x4CBFD3E: printf (printf.c:33)
+==8192==    by 0x109776: main (main.c:99)
+==8192== 
+==8192== 1,024 bytes in 1 blocks are still reachable in loss record 2 of 2
+==8192==    at 0x4A39045: malloc (vg_replace_malloc.c:381)
+==8192==    by 0x4CDFD03: _IO_file_doallocate (filedoalloc.c:101)
+==8192==    by 0x4CEFECF: _IO_doallocbuf (genops.c:347)
+==8192==    by 0x4CEECA3: _IO_file_underflow@@GLIBC_2.2.5 (fileops.c:486)
+==8192==    by 0x4CEFF85: _IO_default_uflow (genops.c:362)
+==8192==    by 0x4CE186B: _IO_getline_info (iogetline.c:60)
+==8192==    by 0x4CE06C9: fgets (iofgets.c:53)
+==8192==    by 0x109791: main (main.c:100)
+==8192== 
+==8192== LEAK SUMMARY:
+==8192==    definitely lost: 0 bytes in 0 blocks
+==8192==    indirectly lost: 0 bytes in 0 blocks
+==8192==      possibly lost: 0 bytes in 0 blocks
+==8192==    still reachable: 2,048 bytes in 2 blocks
+==8192==         suppressed: 0 bytes in 0 blocks
+==8192== 
+==8192== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+==8192== 
+==8192== 1 errors in context 1 of 2:
+==8192== Conditional jump or move depends on uninitialised value(s)
+==8192==    at 0x109C9E: main (main.c:95)
+==8192==  Uninitialised value was created by a stack allocation
+==8192==    at 0x1096A8: main (main.c:74)
+==8192== 
+==8192== 
+==8192== 1 errors in context 2 of 2:
+==8192== Conditional jump or move depends on uninitialised value(s)
+==8192==    at 0x4A3FF2C: strcmp (vg_replace_strmem.c:924)
+==8192==    by 0x109C9B: main (main.c:95)
+==8192==  Uninitialised value was created by a stack allocation
+==8192==    at 0x1096A8: main (main.c:74)
+==8192== 
+==8192== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
