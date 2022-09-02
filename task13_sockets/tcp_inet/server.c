@@ -46,6 +46,7 @@ void make_socket() {
 }
 
 void server() {
+    signal(SIGINT, handle_shutdown);
     char recv_buff[BUFF_SIZE];
     char send_buff[] = "Hello!(from server)";
     struct sockaddr_in client;
