@@ -88,7 +88,9 @@ void* thread_work(void* input) {
             if (size < 0) {
                 error("send");
             }
-            sleep(5);
+            //!!!!!!!!!!!!!!!!!!!!
+            sleep(5);  // Поставлено 5 секунд, чтобы успеть увидеть момент, когда все потоки заняты
+            //!!!!!!!!!!!!!!!!!!!!
             close(t_info->socket);
             get_next_proc(t_info->num);
             t_info->socket = 0;
