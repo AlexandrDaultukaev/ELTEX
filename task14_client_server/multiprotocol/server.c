@@ -18,14 +18,8 @@
 int listenfd;
 int udp_fd;
 int client[FD_SETSIZE];
-int maxi;
+
 void handle_shutdown(int sig) {
-    for (int i = 0; i <= maxi; i++) {
-        if (client[i] != -1) {
-            printf("\nClient socket closed(socket: %d)\n", client[i]);
-            close(client[i]);
-        }
-    }
     close(listenfd);
     close(udp_fd);
     printf("\nServer socket closed\n");
@@ -35,6 +29,42 @@ void handle_shutdown(int sig) {
 void error(char *msg) {
     fprintf(stderr, "%s: %s\n", msg, strerror(errno));
     exit(EXIT_FAILURE);
+}
+
+/*
+ * sock_type = "UDP" or "TCP"
+ */
+int make_socket(int port, const char *sock_type) {
+    struct sockaddr_in servaddr;
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    servaddr.sin_port = port;
+
+    int reuseaddr_on = 1;
+
+    if (strcmp(sock_type, "TCP") == 0) {
+        listenfd = socket(AF_INET, SOCK_STREAM, 0);
+        if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR,
+                       &reuseaddr_on, sizeof(reuseaddr_on)) < 0) {
+            error("setsockopt_tcp");
+        }
+
+        if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
+            error("bind_tcp");
+        }
+        return listenfd;
+    } else {
+        udp_fd = socket(AF_INET, SOCK_DGRAM, 0);
+        if (setsockopt(udp_fd, SOL_SOCKET, SO_REUSEADDR, &reuseaddr_on, sizeof(reuseaddr_on)) < 0) {
+            error("setsockopt_udp");
+        }
+
+        if (bind(udp_fd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
+            error("bind_udp");
+        }
+        return udp_fd;
+    }
+    return -1;
 }
 
 int main(int argc, char **argv) {
@@ -49,37 +79,8 @@ int main(int argc, char **argv) {
     struct sockaddr_in client_UDP;
     socklen_t len_client_UPD = sizeof(client_UDP);
 
-    listenfd = socket(AF_INET, SOCK_STREAM, 0);
-
-    servaddr_TCP.sin_family = AF_INET;
-    servaddr_TCP.sin_addr.s_addr = inet_addr("127.0.0.1");
-    servaddr_TCP.sin_port = 7777;
-
-    int reuseaddr_on = 1;
-    if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR,
-                   &reuseaddr_on, sizeof(reuseaddr_on)) < 0) {
-        error("setsockopt_tcp");
-    }
-
-    if (bind(listenfd, (struct sockaddr *)&servaddr_TCP, sizeof(servaddr_TCP)) < 0) {
-        error("bind_tcp");
-    }
-
-    udp_fd = socket(AF_INET, SOCK_DGRAM, 0);
-
-    servaddr_UDP.sin_family = AF_INET;
-    servaddr_UDP.sin_addr.s_addr = inet_addr("127.0.0.1");
-    servaddr_UDP.sin_port = 7778;
-
-    if (setsockopt(udp_fd, SOL_SOCKET, SO_REUSEADDR, &reuseaddr_on, sizeof(reuseaddr_on)) < 0) {
-        error("setsockopt_udp");
-    }
-
-    if (bind(udp_fd, (struct sockaddr *)&servaddr_UDP, sizeof(servaddr_UDP)) < 0) {
-        error("bind_udp");
-    }
-
-    unsigned int length = sizeof(servaddr_TCP);
+    make_socket(7777, "TCP");
+    make_socket(7778, "UDP");
 
     listen(listenfd, 5);
 
