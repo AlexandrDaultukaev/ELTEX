@@ -1,0 +1,18 @@
+.PHONY: all
+
+CLIENT_NAME=client
+SERVER_NAME=server
+
+all: ${CLIENT_NAME} ${SERVER_NAME}
+
+${CLIENT_NAME}: ${CLIENT_NAME}.o
+	gcc -o ${CLIENT_NAME} ${CLIENT_NAME}.o
+
+${CLIENT_NAME}.o: ${CLIENT_NAME}.c
+	gcc -c ${CLIENT_NAME}.c --std=gnu17 -g
+
+${SERVER_NAME}: ${SERVER_NAME}.o
+	gcc -o ${SERVER_NAME} ${SERVER_NAME}.o
+
+${SERVER_NAME}.o: ${SERVER_NAME}.c
+	gcc -c ${SERVER_NAME}.c --std=gnu17 -g
