@@ -41,7 +41,7 @@ void server() {
     }
 
     name.sin_family = AF_INET;
-    name.sin_addr.s_addr = inet_addr("255.255.255.255");
+    name.sin_addr.s_addr = inet_addr("224.0.0.1");
     name.sin_port = 7777;
 
     int n;

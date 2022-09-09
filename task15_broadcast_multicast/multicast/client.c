@@ -1,5 +1,6 @@
 #include <arpa/inet.h>
 #include <errno.h>
+#include <netinet/in.h>
 #include <signal.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -39,12 +40,14 @@ void run_client() {
     }
 
     server.sin_family = AF_INET;
-    server.sin_addr.s_addr = inet_addr("255.255.255.255");
+    server.sin_addr.s_addr = htonl(INADDR_ANY);
     server.sin_port = 7777;
 
     len = sizeof(server);
-    int flag = 1;
-    if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag)) == -1) {
+    struct ip_mreq group;
+    group.imr_multiaddr.s_addr = inet_addr("224.0.0.1");
+    group.imr_interface.s_addr = htonl(INADDR_ANY);
+    if (setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, &group, sizeof(group)) == -1) {
         error("setsockopt fail");
     }
     if (bind(sock, (struct sockaddr*)&server, sizeof(server)) < 0) {
