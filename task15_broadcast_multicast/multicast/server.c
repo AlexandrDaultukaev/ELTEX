@@ -29,6 +29,7 @@ void error(char* msg) {
 
 void server() {
     struct sockaddr_in name;
+
     size_t size;
     char send_buff[] = "Hello!";
     sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -36,14 +37,10 @@ void server() {
         error("socket");
     }
     int flag = 1;
-    if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag)) == -1) {
-        error("setsockopt fail");
-    }
 
     name.sin_family = AF_INET;
     name.sin_addr.s_addr = inet_addr("224.0.0.1");
-    name.sin_port = 7777;
-
+    name.sin_port = 7777; 
     int n;
     while (1) {
         n = sendto(sock, send_buff, strlen(send_buff), 0, (struct sockaddr*)&name, sizeof(name));

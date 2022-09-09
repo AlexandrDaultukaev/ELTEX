@@ -44,9 +44,10 @@ void run_client() {
     server.sin_port = 7777;
 
     len = sizeof(server);
-    struct ip_mreq group;
+    struct ip_mreqn group;
     group.imr_multiaddr.s_addr = inet_addr("224.0.0.1");
-    group.imr_interface.s_addr = htonl(INADDR_ANY);
+    group.imr_address.s_addr = server.sin_addr.s_addr;
+    group.imr_ifindex = 0;
     if (setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, &group, sizeof(group)) == -1) {
         error("setsockopt fail");
     }
