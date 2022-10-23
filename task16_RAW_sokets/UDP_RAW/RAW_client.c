@@ -72,7 +72,7 @@ int main() {
         }
         recv_buff[size - 1] = '\0';
 
-        printf("%s\n", recv_buff + 28);
+        printf("%s\n", recv_buff + 28);  // 20(ip header) + 8(udp header)
     }
 
     close(sock);
