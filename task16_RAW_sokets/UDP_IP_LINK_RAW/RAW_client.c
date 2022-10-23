@@ -64,18 +64,18 @@ short CRC16(char* buf) {
 }
 
 void init_link_header(LINK_header* link_header) {
-    link_header->destination_mac[0] = 0x30;  // 30:5a:3a:48:46:73
-    link_header->destination_mac[1] = 0x5a;
-    link_header->destination_mac[2] = 0x3a;
-    link_header->destination_mac[3] = 0x48;
-    link_header->destination_mac[4] = 0x46;
-    link_header->destination_mac[5] = 0x73;
-    link_header->source_mac[0] = 0x38;
-    link_header->source_mac[1] = 0xba;
-    link_header->source_mac[2] = 0xf8;
-    link_header->source_mac[3] = 0xe7;
-    link_header->source_mac[4] = 0xc4;
-    link_header->source_mac[5] = 0x8a;
+    link_header->destination_mac[0] = 0x38;  // 30:5a:3a:48:46:73
+    link_header->destination_mac[1] = 0xba;
+    link_header->destination_mac[2] = 0xf8;
+    link_header->destination_mac[3] = 0xe7;
+    link_header->destination_mac[4] = 0xc4;
+    link_header->destination_mac[5] = 0x8a;
+    link_header->source_mac[0] = 0x30;
+    link_header->source_mac[1] = 0x5a;
+    link_header->source_mac[2] = 0x3a;
+    link_header->source_mac[3] = 0x48;
+    link_header->source_mac[4] = 0x46;
+    link_header->source_mac[5] = 0x73;
     link_header->type = htons(0x0800);
 }
 
@@ -140,6 +140,9 @@ int main() {
     // inet_addr("127.0.0.1");
     server.sll_family = AF_PACKET;
     server.sll_ifindex = if_nametoindex("enp2s0");
+    if (server.sll_ifindex == 0) {
+        error("nametoindex");
+    }
     server.sll_addr[0] = 0x38;
     server.sll_addr[1] = 0xba;
     server.sll_addr[2] = 0xf8;
