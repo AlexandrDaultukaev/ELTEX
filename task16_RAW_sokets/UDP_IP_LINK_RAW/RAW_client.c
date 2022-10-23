@@ -28,33 +28,6 @@
 unsigned char macSource[6] = {0x30, 0x5a, 0x3a, 0x48, 0x46, 0x73};
 unsigned char macDest[6] = {0x38, 0xba, 0xf8, 0xe7, 0xc4, 0x8a};
 
-typedef struct LINK_header {
-    char destination_mac[6];
-    char source_mac[6];
-    short type;
-} LINK_header;
-
-typedef struct UDP_header {
-    uint16_t source;
-    uint16_t destination;
-    uint16_t length;
-    uint16_t checksum;
-} UDP_header;
-
-typedef struct IP_header {
-    unsigned int ihl : 4;
-    unsigned int version : 4;  // version=4,header length=5;
-    char DS;                   // always 0;
-    short length;              // auto fill
-    short id;                  // auto fill if 0
-    short flags_and_offset;    // flags=0,frag,end; offset of fragment in full packet
-    char TTL;                  // time to live
-    char Tproto;               // transport protocol
-    short checksum;            // auto fill
-    int source;                // auto fill if 0
-    int destination;
-} IP_header;
-
 unsigned short check_sum(unsigned short* ptr, int nbytes) {
     register long sum = 0;
     unsigned short oddbyte;
