@@ -47,7 +47,7 @@ int main() {
         error("socket");
     }
 
-    server.sin_addr.s_addr = inet_addr("192.168.1.10");
+    server.sin_addr.s_addr = htonl(INADDR_ANY);  // inet_addr("192.168.1.4");
     server.sin_family = AF_INET;
     server.sin_port = htons(7778);
     int reuseaddr_on = 1;
@@ -67,7 +67,7 @@ int main() {
             error("size");
         }
 
-        recv_buff[size - 1] = '\0';
+        // recv_buff[size - 1] = '\0';
         printf("RECV: %s\n", recv_buff);
         sprintf(send_buff, "OK![✔], MSG:%s\n", recv_buff);
         printf("TO SEND:%s", send_buff);
@@ -75,8 +75,7 @@ int main() {
         if (size < 0) {
             error("send");
         }
-        // break;
-    }
+        }
 
     return 0;
 }
