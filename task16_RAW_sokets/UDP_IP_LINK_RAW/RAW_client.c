@@ -174,7 +174,7 @@ int main() {
             error("recv");
         }
         recv_buff[size - 1] = '\0';
-        udp_header = (struct udphdr*)(buff_with_header + LINK_HEADER_SIZE + IP_HEADER_SIZE);
+        udp_header = (struct udphdr*)(recv_buff + LINK_HEADER_SIZE + IP_HEADER_SIZE);
         if (ntohs(udp_header->dest) == 7777)
             printf("%s\n", recv_buff + HEADERS_SIZE);
     }
