@@ -67,7 +67,7 @@ int main() {
             error("size");
         }
 
-        // recv_buff[size - 1] = '\0';
+        recv_buff[size] = '\0';
         printf("RECV: %s\n", recv_buff);
         sprintf(send_buff, "OK![✔], MSG:%s\n", recv_buff);
         printf("TO SEND:%s", send_buff);
