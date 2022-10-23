@@ -17,7 +17,7 @@
 #include <unistd.h>
 
 #define SEND_BUFF_SIZE 128
-#define RECV_BUFF_SIZE 156
+#define RECV_BUFF_SIZE 200
 #define UDP_HEADER_SIZE 8
 #define LINK_HEADER_SIZE 14
 #define IP_HEADER_SIZE 20
@@ -89,7 +89,7 @@ void init_udp_header(UDP_header* udp_header) {
 void init_ip_header(IP_header* ip_header) {
     ip_header->ver_IHL = 69;  // 0100_0101 -> 69
     ip_header->DS = 0;
-    ip_header->length = htons(136);
+
     ip_header->id = 0;
     ip_header->flags_and_offset = 0;
     ip_header->TTL = 255;
@@ -137,7 +137,6 @@ int main() {
     signal(SIGINT, handle_shutdown);
     struct sockaddr_ll server;
 
-    // inet_addr("127.0.0.1");
     server.sll_family = AF_PACKET;
     server.sll_ifindex = if_nametoindex("enp2s0");
     if (server.sll_ifindex == 0) {
@@ -159,6 +158,7 @@ int main() {
     IP_header ip_header;
     LINK_header link_header;
     init_udp_header(&udp_header);
+    ip_header.length = htons(sizeof(send_buff) + 28);
     init_ip_header(&ip_header);
     init_link_header(&link_header);
     udp_ip_link_insert(buff_with_header, (char*)&udp_header, (char*)&ip_header, (char*)&link_header, send_buff);
@@ -177,10 +177,10 @@ int main() {
             error("recv");
         }
         recv_buff[size - 1] = '\0';
-        short* dest_port = (short*)(recv_buff + 36);
-        if (htons(*dest_port) == 7777) {
-            printf("%s\n", recv_buff + 42);
-        }
+        // short* dest_port = (short*)(recv_buff + 36);
+        // if (htons(*dest_port) == 7777) {
+        printf("%s\n", recv_buff + 42);
+        // }
     }
 
     close(sock);
